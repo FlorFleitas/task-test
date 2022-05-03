@@ -1,7 +1,38 @@
 import Head from 'next/head'
 import styles from '../styles/main.module.css'
+import { useState } from 'react'
 
 export default function Home() {
+  const [input, setInput] = useState("");
+  const [todoList, setTodoList] = useState([])
+
+  const handleChange = (e) => {
+    e.preventDefault()
+    setInput(e.target.value)
+
+    console.log(input);
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    setTodoList([
+      input,
+      ...todoList
+    ])
+
+    console.log(todoList)
+    setInput('')
+  }
+
+  const handleDelete = (todo) => {
+    const UpdatedArr = todoList.filter((item) => todoList.indexOf(item) != todoList.indexOf(todo))
+    setTodoList(UpdatedArr)
+  }
+
+
+
+
   return (
     <div className={styles.container}>
       <Head>
@@ -11,44 +42,49 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to Task Manager
+          TODO LIST
         </h1>
 
-        <p className={styles.description}>
-          This is based in: <a href="https://nextjs.org">Next.js!</a><br/>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+        <form>
+          <div className={styles.input}>
+            <input 
+              type="text"
+              value={input}
+              onChange={handleChange}
+              placeholder ='New Todo List'
+            />
+          </div>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+          <div className={styles.select}>
+            <select>
+              <option selected="true" disabled="disabled">Status (Pending / In Progress / Done)</option>
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Done</option>
+            </select>
+          </div>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+          <div className={styles.buttons}>
+            <button onClick={handleSubmit}>ADD</button>
+            <button>MODIFY</button>
+          </div>
+        </form>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+        <div className={styles.list}>
+        <ul>
+          {
+            todoList.length >= 1 ? todoList.map((todo, index) => {
+              return <li key={index}>{todo}<button onClick={(e) => {
+                e.preventDefault()
+                handleDelete(todo)
+              }}>X</button></li>
+            })
+              : <p style={{color: '#333'}}>Add a Todo Item</p>
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          }
+        </ul>
         </div>
+
       </main>
     </div>
   )
